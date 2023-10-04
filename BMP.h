@@ -97,7 +97,9 @@ struct BMP {
                     inp.read((char*)&bmp_color_header, sizeof(bmp_color_header));
                 }
             }
-            data.resize(bmp_info_header.width * bmp_info_header.height * bmp_info_header.bit_count / 8);
+            uint32_t channels = bmp_info_header.bit_count / 8;
+            int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
+            data.resize(bmp_info_header.height * (bmp_info_header.width * bmp_info_header.bit_count / 8 + padding_now));
             data_rab.resize(file_header.offset_data - sizeof(file_header) - sizeof(bmp_info_header));
             inp.read((char*)data_rab.data(), data_rab.size());
             inp.read((char*)data.data(), data.size());
