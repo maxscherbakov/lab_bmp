@@ -4,7 +4,7 @@
 int main() {
 
     BMP bmp("mind_8.bmp");
-    std:: cout << bmp.file_header.file_size << "\n";
+    std:: cout << "size mind_8.bmp:" << bmp.file_header.file_size << "\n";
     bmp.write("mind_8_out.bmp");
     bmp.verr_right();
     bmp.write("mind_8_right.bmp");
@@ -14,7 +14,7 @@ int main() {
     bmp.write("mind_8_gauss.bmp");
 
     BMP bmp2("geom_24.bmp");
-    std:: cout << "size geom_24: " << bmp2.file_header.file_size << "\n";
+    std:: cout << "size geom_24.bmp: " << bmp2.file_header.file_size << "\n";
     bmp2.write("geom_24_out.bmp");
     bmp2.verr_right();
     bmp2.write("geom_24_right.bmp");
