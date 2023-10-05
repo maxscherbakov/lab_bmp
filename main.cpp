@@ -26,4 +26,15 @@ int main() {
     bmp2.gauss(5);
     bmp2.write("geom_24_gauss.bmp");
 
+   BMP bmp3("test.bmp");
+    std:: cout << "size test.bmp:" << bmp3.file_header.file_size << "\n";
+    bmp3.write("test_out.bmp");
+    bmp3.verr_right();
+    bmp3.write("test_right.bmp");
+    bmp3.verr_left();
+    bmp3.verr_left();
+    bmp3.write("test_left.bmp");
+    bmp3.gauss(5);
+    bmp3.write("test_gauss.bmp");
+
 }

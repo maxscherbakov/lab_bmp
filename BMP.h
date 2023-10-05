@@ -52,17 +52,42 @@ struct BMP {
         read(fname);
     }
 
+    // void gauss(int r) {
+    //     std::vector <uint8_t> data2((bmp_info_header.width + r *2 ) * (bmp_info_header.height + r * 2) * bmp_info_header.bit_count / 8);
+    //     uint32_t channles = bmp_info_header.bit_count / 8; 
+    //     int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
+    //     for (int y = 0; y < bmp_info_header.height; y++){
+    //         for (int x = 0; x < bmp_info_header.width; x++){
+    //             for (int pix = 0; pix < channles; pix++) {
+    //             data2[channles * (x+r + (y+r)*(bmp_info_header.width+r*2)) + pix + padding_now * (y+r)] = data[channles * (x + y * bmp_info_header.width) + pix + padding_now*y];
+    //             }
+    //         }
+    //     }
+    //     const double PI = 3.141592653589793;
+    //     double e = exp(1);
+    //     std:: vector <double> d(4);
+    //     for (int y = 0; y < bmp_info_header.height; y++){
+    //         for (int x = 0; x < bmp_info_header.width; x++){
+    //             d = {0, 0, 0, 0};
+    //             for (int i = -r; i < r; i++){
+    //                 for (int j = -r; j < r; j++){
+    //                     for (int pix = 0; pix < channles; pix++) {
+    //                         d[pix] += (1.2/ pow(e, (i*i + j*j)/(2*r*r))) * data2[channles * ((x+r + i) + (bmp_info_header.width + r * 2) * (y + r + j)) + pix + (y + r + j)*padding_now];
+    //                     }
+    //                 }
+    //             }
+    //             for (int pix = 0; pix < channles; pix++) {
+    //                 data[channles * (x + y * bmp_info_header.width)+pix+y*padding_now] = d[pix] * (1/(2 * PI * r * r));
+
+    //             }
+    //         }
+    //     }
+    // }
+    
     void gauss(int r) {
-        std::vector <uint8_t> data2((bmp_info_header.width + r *2 ) * (bmp_info_header.height + r * 2) * bmp_info_header.bit_count / 8);
+        std::vector <uint8_t> data2(data);
         uint32_t channles = bmp_info_header.bit_count / 8; 
         int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
-        for (int y = 0; y < bmp_info_header.height; y++){
-            for (int x = 0; x < bmp_info_header.width; x++){
-                for (int pix = 0; pix < channles; pix++) {
-                data2[channles * (x+r + (y+r)*(bmp_info_header.width+r*2)) + pix + padding_now * (y+r)] = data[channles * (x + y * bmp_info_header.width) + pix + padding_now*y];
-                }
-            }
-        }
         const double PI = 3.141592653589793;
         double e = exp(1);
         std:: vector <double> d(4);
@@ -70,19 +95,46 @@ struct BMP {
             for (int x = 0; x < bmp_info_header.width; x++){
                 d = {0, 0, 0, 0};
                 for (int i = -r; i < r; i++){
-                    for (int j = -r; j < r; j++){
-                        for (int pix = 0; pix < channles; pix++) {
-                            d[pix] += (1.2/ pow(e, (i*i + j*j)/(2*r*r))) * data2[channles * ((x+r + i) + (bmp_info_header.width + r * 2) * (y + r + j)) + pix + (y + r + j)*padding_now];
-                        }
+                    double kf = (1.2/ pow(e, (i*i)/(2*r*r)));
+                    int ind;
+                    if (x+i<0 || x+i>bmp_info_header.width){
+                        ind = channles * ((x-i)+y*bmp_info_header.width) + y*padding_now;
+                    } else {
+                        ind = channles * ((x+i)+y*bmp_info_header.width) + y*padding_now;
+                    }
+                    for (int pix = 0; pix < channles; pix++) {
+                        d[pix] += data[ind+pix] * kf;
                     }
                 }
                 for (int pix = 0; pix < channles; pix++) {
-                    data[channles * (x + y * bmp_info_header.width)+pix+y*padding_now] = d[pix] * (1/(2 * PI * r * r));
+                    data2[channles * (x+y*bmp_info_header.width) + y*padding_now+pix] = d[pix]* (1/(2 * PI * r * r));
+                }
+            }
 
+        }
+        for (int y = 0; y < bmp_info_header.height; y++){
+            for (int x = 0; x < bmp_info_header.width; x++){
+                d = {0, 0, 0, 0};
+                for (int i = -r; i < r; i++){
+                    double kf = (1.2/ pow(e, (i*i)/(2*r*r)));
+                    int ind;
+                    if (y+i<0 || y+i>bmp_info_header.height){
+                        ind = channles * (x+(y-i)*bmp_info_header.width) + (y-i)*padding_now;
+                    } else {
+                        ind = channles * (x+(y+i)*bmp_info_header.width) + (y+i)*padding_now;
+                    }
+                    for (int pix = 0; pix < channles; pix++) {
+                        d[pix] += data2[ind+pix] * kf;
+                    }
+                }
+                for (int pix = 0; pix < channles; pix++) {
+                    data[channles * (x+y*bmp_info_header.width) + y*padding_now+pix] = d[pix];
                 }
             }
         }
+
     }
+ 
     
 
     void read(const char *fname) {
