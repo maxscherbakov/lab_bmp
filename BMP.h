@@ -38,7 +38,7 @@ struct BMPColorHeader {
     uint32_t colors_used{ 0 };             
     uint32_t colors_important{ 0 };        
 };
-#pragma pack(pop);
+#pragma pack(pop)
 
 
 struct BMP {
@@ -56,8 +56,8 @@ struct BMP {
         std::vector <uint8_t> data2((bmp_info_header.width + r *2 ) * (bmp_info_header.height + r * 2) * bmp_info_header.bit_count / 8);
         uint32_t channles = bmp_info_header.bit_count / 8; 
         int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
-        for (uint y = 0; y < bmp_info_header.height; y++){
-            for (uint x = 0; x < bmp_info_header.width; x++){
+        for (int y = 0; y < bmp_info_header.height; y++){
+            for (int x = 0; x < bmp_info_header.width; x++){
                 for (int pix = 0; pix < channles; pix++) {
                 data2[channles * (x+r + (y+r)*(bmp_info_header.width+r*2)) + pix + padding_now * (y+r)] = data[channles * (x + y * bmp_info_header.width) + pix + padding_now*y];
                 }
@@ -66,8 +66,8 @@ struct BMP {
         const double PI = 3.141592653589793;
         double e = exp(1);
         std:: vector <double> d(4);
-        for (uint y = 0; y < bmp_info_header.height; y++){
-            for (uint x = 0; x < bmp_info_header.width; x++){
+        for (int y = 0; y < bmp_info_header.height; y++){
+            for (int x = 0; x < bmp_info_header.width; x++){
                 d = {0, 0, 0, 0};
                 for (int i = -r; i < r; i++){
                     for (int j = -r; j < r; j++){
