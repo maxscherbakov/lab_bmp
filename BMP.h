@@ -85,7 +85,7 @@ struct BMP {
                 for (int i = -r; i < r; i++){
                     double kf = (1.2/ pow(e, (i*i)/(2*r*r)));
                     int ind;
-                    if (y+i<0 || y+i>bmp_info_header.height){
+                    if (y+i<0 || y+i>=bmp_info_header.height){
                         ind = channles * (x+(y-i)*bmp_info_header.width) + (y-i)*padding_now;
                     } else {
                         ind = channles * (x+(y+i)*bmp_info_header.width) + (y+i)*padding_now;

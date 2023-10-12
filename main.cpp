@@ -11,7 +11,7 @@ int main() {
     bmp.verr_left();
     bmp.verr_left();
     bmp.write("mind_8_left.bmp");
-    bmp.gauss(5);
+    bmp.gauss(2);
     bmp.write("mind_8_gauss.bmp");
 
     //24 бит файл с шириной не кратной 4
