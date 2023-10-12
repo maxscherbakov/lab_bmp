@@ -15,27 +15,12 @@ struct BMPFileHeader {
     uint32_t offset_data{0};          
 };
 
-struct BMPColorHeader {
-    uint32_t red_mask{ 0x00ff0000 };      
-    uint32_t green_mask{ 0x0000ff00 };      
-    uint32_t blue_mask{ 0x000000ff };       
-    uint32_t alpha_mask{ 0xff000000 };     
-    uint32_t color_space_type{ 0x73524742 }; 
-    uint32_t unused[16]{ 0 };
-};
-
  struct BMPInfoHeader {
     uint32_t size{ 0 };             
     int32_t width{ 0 };                  
     int32_t height{ 0 };             
     uint16_t planes{ 1 };                  
-    uint16_t bit_count{ 0 };
-    uint32_t compression{ 0 }; 
-    uint32_t size_image{ 0 };
-    int32_t x_pixels_per_meter{ 0 };
-    int32_t y_pixels_per_meter{ 0 };
-    uint32_t colors_used{ 0 };             
-    uint32_t colors_important{ 0 };        
+    uint16_t bit_count{ 0 };     
 };
 #pragma pack(pop)
 
@@ -43,9 +28,8 @@ struct BMPColorHeader {
 struct BMP {
     BMPFileHeader file_header;
     BMPInfoHeader bmp_info_header;
-    BMPColorHeader bmp_color_header;
     std::vector<uint8_t> data;
-    std::vector<uint8_t> data_rab;
+    std::vector<uint8_t> header_add;
 
     BMP(const char *fname) {
         read(fname);
@@ -110,17 +94,11 @@ struct BMP {
             inp.read((char*)&file_header, sizeof(file_header));
             if(file_header.file_type != 0x4D42) throw std::runtime_error("Error! Unrecognized file format.");
             inp.read((char*)&bmp_info_header, sizeof(bmp_info_header));
-
-            if (bmp_info_header.bit_count == 32) {
-                if (bmp_info_header.size >= (sizeof(BMPInfoHeader) + sizeof(BMPColorHeader))) {
-                    inp.read((char*)&bmp_color_header, sizeof(bmp_color_header));
-                }
-            }
             uint32_t channels = bmp_info_header.bit_count / 8;
             int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
             data.resize(bmp_info_header.height * (bmp_info_header.width * bmp_info_header.bit_count / 8 + padding_now));
-            data_rab.resize(file_header.offset_data - sizeof(file_header) - sizeof(bmp_info_header));
-            inp.read((char*)data_rab.data(), data_rab.size());
+            header_add.resize(file_header.offset_data - sizeof(file_header) - sizeof(bmp_info_header));
+            inp.read((char*)header_add.data(), header_add.size());
             inp.read((char*)data.data(), data.size());
         } else {
             throw std::runtime_error("Unable to open the input image file.");
@@ -128,7 +106,7 @@ struct BMP {
         inp.close();
     }
 
-    void verr_right(){
+    void turn_right(){
         std::vector <uint8_t> data2(data);
         uint32_t channels = bmp_info_header.bit_count / 8;
         int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
@@ -145,7 +123,7 @@ struct BMP {
         std:: swap(bmp_info_header.width, bmp_info_header.height);
     }
 
-    void verr_left() {
+    void turn_left() {
         std::vector <uint8_t> data2(data);
         uint32_t channels = bmp_info_header.bit_count / 8;
         int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
@@ -162,18 +140,16 @@ struct BMP {
         std:: swap(bmp_info_header.width, bmp_info_header.height);
     }
 
+
     void write(const char *fname) {
      	std:: ofstream of{fname, std:: ios_base::binary};
         if (of) {
             of.write((const char*)&file_header, sizeof(file_header));
             of.write((const char*)&bmp_info_header, sizeof(bmp_info_header));
-            if(bmp_info_header.bit_count == 32) {
-                of.write((const char*)&bmp_color_header, sizeof(bmp_color_header));
-            }
-            of.write((const char*)data_rab.data(), data_rab.size());
+            of.write((const char*)header_add.data(), header_add.size());
             of.write((const char*)data.data(), data.size());
         }
         of.close();
     }
 };
-#endif
+#endif //BMP_H
