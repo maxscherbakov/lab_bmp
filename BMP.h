@@ -1,6 +1,5 @@
-#pragma once
-#ifndef BMP_READER_H
-#define BMP_READER_H
+#ifndef BMP_H
+#define BMP_H
 #include <vector>
 #include <iostream>
 #include <fstream>
