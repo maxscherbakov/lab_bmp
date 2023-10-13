@@ -4,6 +4,7 @@
 int main() {
     // 8 бит файл с шириной кратной 4
     BMP bmp("test1.bmp");
+    bmp.size_image("test1.bmp");
     bmp.write("test1_out.bmp");
     bmp.turn_right();
     bmp.write("test1_right.bmp");
@@ -15,6 +16,7 @@ int main() {
 
     //24 бит файл с шириной не кратной 4
     BMP bmp2("test2.bmp");
+    bmp2.size_image("test2.bmp");
     bmp2.write("test2_out.bmp");
     bmp2.turn_right();
     bmp2.write("test2_right.bmp");
@@ -26,6 +28,7 @@ int main() {
 
     //24 бит файл 1920*1280
     BMP bmp3("test3.bmp");
+    bmp3.size_image("test3.bmp");
     bmp3.write("test3_out.bmp");
     bmp3.turn_right();
     bmp3.write("test3_right.bmp");

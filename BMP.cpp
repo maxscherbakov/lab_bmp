@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include "BMP.hpp"
+#include "BMP.h"
 
 #pragma pack(push, 1)
 struct BMPFileHeader {
@@ -139,4 +139,8 @@ void BMP::write(const char *fname) {
         of.write((const char*)data.data(), data.size());
     }
     of.close();
+}
+
+void BMP::size_image(const char *fname) {
+    std:: cout << "size " << fname << ":" << file_header.file_size << "\n";
 }

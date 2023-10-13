@@ -14,6 +14,7 @@ struct BMP {
     void turn_right();
     void turn_left();
     void write(const char *fname);
+    void size_image(const char *fname);
 };
 
 #endif //BMP_H
