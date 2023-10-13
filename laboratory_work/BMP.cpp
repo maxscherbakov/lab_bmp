@@ -80,7 +80,7 @@ void BMP::gauss(int r) {
 
 void BMP::read(const char *fname) {
     std:: ifstream inp{fname, std::ios_base::binary};
-    if (inp) {
+    if (inp.is_open()) {
         inp.read((char*)&file_header, sizeof(file_header));
         if(file_header.file_type != 0x4D42) throw std::runtime_error("Error! Unrecognized file format.");
         inp.read((char*)&bmp_info_header, sizeof(bmp_info_header));
@@ -132,7 +132,7 @@ void BMP::turn_left() {
 
 void BMP::write(const char *fname) {
     std:: ofstream of{fname, std:: ios_base::binary};
-    if (of) {
+    if (of.is_open()) {
         of.write((const char*)&file_header, sizeof(file_header));
         of.write((const char*)&bmp_info_header, sizeof(bmp_info_header));
         of.write((const char*)header_add.data(), header_add.size());
