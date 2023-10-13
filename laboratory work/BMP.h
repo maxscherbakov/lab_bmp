@@ -1,9 +1,6 @@
 #ifndef BMP_H
 #define BMP_H
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <cmath>
+
 
 struct BMP {
     BMP(const char *fname) {
