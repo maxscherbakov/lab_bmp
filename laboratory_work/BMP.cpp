@@ -26,9 +26,10 @@ BMPFileHeader file_header;
 BMPInfoHeader bmp_info_header;
 std::vector<uint8_t> data;
 std::vector<uint8_t> header_add;
+std::vector <uint8_t> data2;
 
 void BMP::gauss(int r) {
-    std::vector <uint8_t> data2(data);
+    data2 = data;
     uint32_t channles = bmp_info_header.bit_count / 8; 
     int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
     const double PI = 3.141592653589793;
@@ -97,7 +98,7 @@ void BMP::read(const char *fname) {
 }
 
 void BMP::turn_right(){
-    std::vector <uint8_t> data2(data);
+    data2 = data;
     uint32_t channels = bmp_info_header.bit_count / 8;
     int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
     int padding_next = (4 - channels * bmp_info_header.height % 4) % 4;
@@ -114,7 +115,7 @@ void BMP::turn_right(){
 }
 
 void BMP::turn_left() {
-    std::vector <uint8_t> data2(data);
+    data2 = data;
     uint32_t channels = bmp_info_header.bit_count / 8;
     int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
     int padding_next = (4 - channels * bmp_info_header.height % 4) % 4;
@@ -150,4 +151,6 @@ void BMP:: del_image() {
     data.shrink_to_fit();
     header_add.clear();
     header_add.shrink_to_fit();
+    data2.clear();
+    data2.shrink_to_fit();
 }
