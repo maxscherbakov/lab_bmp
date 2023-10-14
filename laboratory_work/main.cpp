@@ -13,6 +13,7 @@ int main() {
     bmp.write("test1_left.bmp");
     bmp.gauss(2);
     bmp.write("test1_gauss.bmp");
+    bmp.del_image();
 
     //24 бит файл с шириной не кратной 4
     BMP bmp2("test2.bmp");
@@ -25,6 +26,7 @@ int main() {
     bmp2.write("test2_left.bmp");
     bmp2.gauss(5);
     bmp2.write("test2_gauss.bmp");
+    bmp2.del_image();
 
     //24 бит файл 1920*1280
     BMP bmp3("test3.bmp");
@@ -37,5 +39,6 @@ int main() {
     bmp3.write("test3_left.bmp");
     bmp3.gauss(5);
     bmp3.write("test3_gauss.bmp");
+    bmp3.del_image();
 
 }

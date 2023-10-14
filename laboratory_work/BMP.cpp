@@ -144,3 +144,10 @@ void BMP::write(const char *fname) {
 void BMP::size_image(const char *fname) {
     std:: cout << "size " << fname << ":" << file_header.file_size << "\n";
 }
+
+void BMP:: del_image() {
+    data.clear();
+    data.shrink_to_fit();
+    header_add.clear();
+    header_add.shrink_to_fit();
+}

@@ -12,6 +12,7 @@ struct BMP {
     void turn_left();
     void write(const char *fname);
     void size_image(const char *fname);
+    void del_image();
 };
 
 #endif //BMP_H
