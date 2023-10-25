@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include "BMP.h"
-
+/* Этих чуваков тоже в хэдер */
 #pragma pack(push, 1)
 struct BMPFileHeader {
     uint16_t file_type{0x4D42};       
@@ -21,7 +21,9 @@ struct BMPFileHeader {
     uint16_t bit_count{ 0 };     
 };
 #pragma pack(pop)
-
+/* Эти ребята дожны быть полями класса. Ты в данный момент не сможешь
+ * работать в этом классе одновременно с несколькими картинками, глобальные
+ * переменные одни, а экземпляров класса много */
 BMPFileHeader file_header;
 BMPInfoHeader bmp_info_header;
 std::vector<uint8_t> data;
@@ -29,7 +31,7 @@ std::vector<uint8_t> header_add;
 std::vector <uint8_t> data2;
 
 void BMP::gauss(int r) {
-    data2 = data;
+    data2 = data; // думается, data2 может быть локальной переменной 
     uint32_t channles = bmp_info_header.bit_count / 8; 
     int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
     const double PI = 3.141592653589793;
@@ -47,7 +49,8 @@ void BMP::gauss(int r) {
                     ind = channles * ((x+i)+y*bmp_info_header.width) + y*padding_now;
                 }
                 for (int pix = 0; pix < channles; pix++) {
-                    d[pix] += data[ind+pix] * kf;
+                    /* Valgrind здесь утверждает, что читаешь за границей массива */
+                    d[pix] += data[ind+pix] * kf; 
                 }
             }
             for (int pix = 0; pix < channles; pix++) {
@@ -105,6 +108,7 @@ void BMP::turn_right(){
 
     for (uint32_t y = 0; y < bmp_info_header.height; y++){
         for (uint32_t x = 0; x < bmp_info_header.width; x++){
+            /* Такие длинные выражения надо разбивать */
             int32_t ind = channels * ((bmp_info_header.width - x - 1) * bmp_info_header.height + y) + (bmp_info_header.width - x - 1) * padding_next;
             for (int pix = 0; pix < channels; pix++) {
                 data[ind+pix] = data2[channels * (x + y * bmp_info_header.width)+pix + y*padding_now];
@@ -145,7 +149,10 @@ void BMP::write(const char *fname) {
 void BMP::size_image(const char *fname) {
     std:: cout << "size " << fname << ":" << file_header.file_size << "\n";
 }
-
+/* Довольно странная функция. С классами обычно не так работают.
+ * тут вопрос в том, Является экземпляр класса картинкой или владеет
+ * ей. Если владеет, то это пойдет. Но мне кажется, что является.
+ * Что ты тут подразумевал? */
 void BMP:: del_image() {
     data.clear();
     data.shrink_to_fit();
