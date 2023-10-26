@@ -4,32 +4,9 @@
 #include <cmath>
 #include "BMP.h"
 
-#pragma pack(push, 1)
-struct BMPFileHeader {
-    uint16_t file_type{0x4D42};       
-    uint32_t file_size{0};            
-    uint16_t reserved1{0};            
-    uint16_t reserved2{0};            
-    uint32_t offset_data{0};          
-};
-
- struct BMPInfoHeader {
-    uint32_t size{ 0 };             
-    int32_t width{ 0 };                  
-    int32_t height{ 0 };             
-    uint16_t planes{ 1 };                  
-    uint16_t bit_count{ 0 };     
-};
-#pragma pack(pop)
-
-BMPFileHeader file_header;
-BMPInfoHeader bmp_info_header;
-std::vector<uint8_t> data;
-std::vector<uint8_t> header_add;
-std::vector <uint8_t> data2;
 
 void BMP::gauss(int r) {
-    data2 = data;
+    std:: vector <uint8_t> data2(data);
     uint32_t channles = bmp_info_header.bit_count / 8; 
     int padding_now = (4 - channles * bmp_info_header.width % 4) % 4;
     const double PI = 3.141592653589793;
@@ -41,7 +18,7 @@ void BMP::gauss(int r) {
             for (int i = -r; i < r; i++){
                 double kf = (1.2/ pow(e, (i*i)/(2*r*r)));
                 int ind;
-                if (x+i<0 || x+i>bmp_info_header.width){
+                if (x+i<0 || x+i>=bmp_info_header.width){
                     ind = channles * ((x-i)+y*bmp_info_header.width) + y*padding_now;
                 } else {
                     ind = channles * ((x+i)+y*bmp_info_header.width) + y*padding_now;
@@ -56,6 +33,7 @@ void BMP::gauss(int r) {
         }
 
     }
+
     for (int y = 0; y < bmp_info_header.height; y++){
         for (int x = 0; x < bmp_info_header.width; x++){
             d = {0, 0, 0, 0};
@@ -98,14 +76,15 @@ void BMP::read(const char *fname) {
 }
 
 void BMP::turn_right(){
-    data2 = data;
+    std:: vector <uint8_t> data2(data);
     uint32_t channels = bmp_info_header.bit_count / 8;
     int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
     int padding_next = (4 - channels * bmp_info_header.height % 4) % 4;
 
     for (uint32_t y = 0; y < bmp_info_header.height; y++){
         for (uint32_t x = 0; x < bmp_info_header.width; x++){
-            int32_t ind = channels * ((bmp_info_header.width - x - 1) * bmp_info_header.height + y) + (bmp_info_header.width - x - 1) * padding_next;
+            int32_t ind = channels * ((bmp_info_header.width - x - 1) * bmp_info_header.height + y) + \
+            (bmp_info_header.width - x - 1) * padding_next;
             for (int pix = 0; pix < channels; pix++) {
                 data[ind+pix] = data2[channels * (x + y * bmp_info_header.width)+pix + y*padding_now];
             }
@@ -115,7 +94,7 @@ void BMP::turn_right(){
 }
 
 void BMP::turn_left() {
-    data2 = data;
+    std:: vector <uint8_t> data2(data);
     uint32_t channels = bmp_info_header.bit_count / 8;
     int padding_now = (4 - channels * bmp_info_header.width % 4) % 4;
     int padding_next = (4 - channels * bmp_info_header.height % 4) % 4;
@@ -146,11 +125,3 @@ void BMP::size_image(const char *fname) {
     std:: cout << "size " << fname << ":" << file_header.file_size << "\n";
 }
 
-void BMP:: del_image() {
-    data.clear();
-    data.shrink_to_fit();
-    header_add.clear();
-    header_add.shrink_to_fit();
-    data2.clear();
-    data2.shrink_to_fit();
-}
